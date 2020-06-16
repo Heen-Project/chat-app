@@ -1,8 +1,11 @@
-const generateMessage = (username, text) => {
+const generateMessage = (username, text, {boolTime, messageBGC, messageTC}) => {
     return {
         username,
         text,
-        createdAt: new Date().getTime()
+        createdAt: new Date().getTime(),
+        boolTime,
+        messageBGC,
+        messageTC
     }
 }
 const generateLocationMessage = (username, url) => {

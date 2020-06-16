@@ -12,8 +12,6 @@ const messageTemplate = document.querySelector('#message-template').innerHTML;
 const locationTemplate = document.querySelector('#location-template').innerHTML;
 const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML;
 const adminMessageTemplate = document.querySelector('#admin-message-template').innerHTML;
-const adminNotificationTemplate = document.querySelector('#admin-notification-template').innerHTML;
-const adminWarningTemplate = document.querySelector('#admin-warning-template').innerHTML;
 // Options
 const { username, room } = Qs.parse(location.search, {ignoreQueryPrefix: true});
 
@@ -51,27 +49,29 @@ const enableInput = () => {
 }
 
 socket.on('message', (message) => {
-    const html = (message.username  === 'Admin' && message.text.includes('left')) ? Mustache.render(adminNotificationTemplate, {
+    const isMe = message.username === username.trim().toLowerCase();
+    const html = (message.username  === 'Admin') ? Mustache.render(adminMessageTemplate, {
         message: message.text,
-        createdAt: moment(message.createdAt).format('h:mm a')
-    }): (message.username  === 'Admin') ? Mustache.render(adminMessageTemplate, {
-        message: message.text,
-        createdAt: moment(message.createdAt).format('h:mm a')
+        createdAt: (!message.boolTime)? '' : ' at '+moment(message.createdAt).format('h:mm a'),
+        messageBGC: (!message.messageBGC)? '' : `background:${message.messageBGC+';'}`,
+        messageTC: (!message.messageTC)? '' : `color:${message.messageTC+';'}`
     }): Mustache.render(messageTemplate, {
-        username: message.username,
+        username: isMe? 'me': `${message.username}`,
         message: message.text,
-        float: message.username === username.trim().toLowerCase()? 'right': 'left',
-        createdAt: moment(message.createdAt).format('h:mm a')
+        float: isMe? 'right': 'left',
+        createdAt: (!message.boolTime)? '' : moment(message.createdAt).format('h:mm a')
     });
     $messages.insertAdjacentHTML('beforeend', html);
     autoscroll();
 });
 
 socket.on('locationMessage', (message) => {
+    const isMe = message.username === username.trim().toLowerCase();
     const html = Mustache.render(locationTemplate, {
-        username: message.username,
+        username: isMe? 'me': `${message.username}`,
+        location_username: isMe? 'my': `user '${message.username}'`,
         url: message.url,
-        float: message.username === username.trim().toLowerCase()? 'right': 'left',
+        float: isMe? 'right': 'left',
         createdAt: moment(message.createdAt).format('h:mm a')
     });
     $messages.insertAdjacentHTML('beforeend', html);
@@ -94,8 +94,11 @@ $messageForm.addEventListener('submit', (e) => {
         $messageFormInput.value = '';
         enableInput();
         if (error){
-            const html = Mustache.render(adminWarningTemplate, {
-                message: error
+            const html = Mustache.render(adminMessageTemplate, {
+                message: error.error,
+                createdAt: (!error.boolTime)? '' : ' at '+moment(error.createdAt).format('h:mm a'),
+                messageBGC: (!error.messageBGC)? '' : `background:${error.messageBGC+';'}`,
+                messageTC: (!error.messageTC)? '' : `color:${error.messageTC+';'}`
             });
             $messages.insertAdjacentHTML('beforeend', html);
             autoscroll();
@@ -105,10 +108,11 @@ $messageForm.addEventListener('submit', (e) => {
 
 $sendLocationButton.addEventListener('click', (e) => {
     e.preventDefault();
+    disableInput();
     if (!navigator.geolocation) { // mdn geolocation
+        enableInput();
         return alert('Geolocation is not supported by your browser');
     }
-    disableInput();
     navigator.geolocation.getCurrentPosition((position) => {
         socket.emit('sendLocation', {
             latitude: position.coords.latitude,

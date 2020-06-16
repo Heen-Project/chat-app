@@ -5,6 +5,8 @@ const socketio = require('socket.io');
 const Filter = require('bad-words');
 const { generateMessage, generateLocationMessage } = require('./utils/messages')
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
+const messageBGC = ['#DB4437', '#0F9D58', '#F4B400', '#4285F4']; //red, green, yellow, blue
+const messageTC = ['#ffffff', '#3e3e3e']; //white ,grey
 
 const app = express();
 const server = http.createServer(app);
@@ -33,13 +35,14 @@ io.on('connection', (socket) => {
             }
             socket.join(user.room);
     
-            socket.emit('message', generateMessage('Admin', `Welcome, to the ${user.room} Room!`));
-            socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.username} has joined!`));
+            socket.emit('message', generateMessage('Admin', `Welcome to the '${user.room}' room!`, {boolTime: true, messageBGC: messageBGC[1], messageTC: messageTC [0]}));
+            socket.emit('message', generateMessage('Admin', `Invite others to join the chat to have a pleasant chat!`, {boolTime: false, messageBGC: messageBGC[1], messageTC: messageTC [0]}));
+            socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.username} has joined the chat!`, {boolTime: true, messageBGC: messageBGC[1], messageTC: messageTC [0]}));
+            
             io.to(user.room).emit('roomData', {
                 room: user.room,
                 users:  getUsersInRoom(user.room)
             });
-    
             callback();
         });
     
@@ -48,11 +51,10 @@ io.on('connection', (socket) => {
             const filter = new Filter();
     
             if(filter.isProfane(message)){
-                return callback('Profanity is not allowed!');
+                return callback({error: 'Profanity is not allowed! Please watch your language!', boolTime: false, messageBGC: messageBGC[0], messageTC: messageTC [0]});
             }
     
-            io.to(user.room).emit('message', generateMessage(user.username, message));
-    
+            io.to(user.room).emit('message', generateMessage(user.username, message, {boolTime: true}));
             callback();
         });
     
@@ -62,15 +64,13 @@ io.on('connection', (socket) => {
             io.to(user.room).emit('locationMessage', generateLocationMessage(user.username, `https://www.google.com/maps/@?q=${coords.latitude},${coords.longitude}`));
             // generateLocationMessage(`https://www.google.com/maps/@?api=1&map_action=map&center=${coords.latitude},${coords.longitude}`)
             // generateLocationMessage(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${coords.latitude},${coords.longitude}`)
-    
             callback();
         });
     
         socket.on('disconnect', () => {
             const user = removeUser(socket.id);
-            
             if (user){
-                io.to(user.room).emit('message', generateMessage('Admin', `${user.username} has left!`));
+                io.to(user.room).emit('message', generateMessage('Admin', `${user.username} has left the chat!`, {boolTime: true, messageBGC: messageBGC[2], messageTC: messageTC [1]}));
                 io.to(user.room).emit('roomData', {
                     room: user.room,
                     users:  getUsersInRoom(user.room)

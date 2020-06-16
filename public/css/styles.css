@@ -134,32 +134,8 @@ button:disabled {
 }
 
 .message__admin{
-    background: #0F9D58;
     font-size: 10px;
     text-align: center;
-    color: #fff;
-    padding: 7px 10px;
-    border-radius: 25px;
-    margin: 16px 3px 16px 3px;
-    width: fit-content;
-}
-
-.message__notification_admin{
-    background: #F4B400;
-    font-size: 10px;
-    text-align: center;
-    color: #3e3e3e;
-    padding: 7px 10px;
-    border-radius: 25px;
-    margin: 16px 3px 16px 3px;
-    width: fit-content;
-}
-
-.message__warning_admin{
-    background: #DB4437;
-    font-size: 10px;
-    text-align: center;
-    color: #fff;
     padding: 7px 10px;
     border-radius: 25px;
     margin: 16px 3px 16px 3px;

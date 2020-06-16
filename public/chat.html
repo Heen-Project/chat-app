@@ -34,7 +34,7 @@
                     <span class="message__name">{{username}}</span>
                     <span class="message__meta">{{createdAt}}</span>
                 </p>
-                <a href="{{url}}" target="_blank">My current location</a>
+                <a href="{{url}}" target="_blank">{{location_username}} location</a>
             </div>
         </script>
         <script id="sidebar-template" type="text/html">
@@ -48,22 +48,8 @@
         </script>
         <script id="admin-message-template" type="text/html">
             <center class="message">
-                <div class="message__admin">
-                    <p>{{message}} at {{createdAt}}</p>
-                </div>
-            </center>
-        </script>
-        <script id="admin-notification-template" type="text/html">
-            <center class="message">
-                <div class="message__notification_admin">
-                    <p>{{message}} at {{createdAt}}</p>
-                </div>
-            </center>
-        </script>
-        <script id="admin-warning-template" type="text/html">
-            <center class="message">
-                <div class="message__warning_admin">
-                    <p>{{message}}</p>
+            <div class="message__admin" style="{{messageBGC}} {{messageTC}}">
+                    <p>{{message}}{{createdAt}}</p>
                 </div>
             </center>
         </script>
