@@ -120,6 +120,16 @@ $sendLocationButton.addEventListener('click', (e) => {
         }, (callback) => {
             enableInput();
         });
+    }, (error) => {
+        enableInput();
+        if (error.code == error.PERMISSION_DENIED){
+            const html = Mustache.render(adminMessageTemplate, {
+                message: 'You denied permission to retrieve location data!',
+                messageBGC: 'background:#DB4437;',
+                messageTC: 'color:#FFFFFF;'
+            });
+            $messages.insertAdjacentHTML('beforeend', html);
+        } else alert(error);
     });
 });
 
