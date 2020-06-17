@@ -5,8 +5,16 @@ const socketio = require('socket.io');
 const Filter = require('bad-words');
 const { generateMessage, generateLocationMessage } = require('./utils/messages')
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
-const messageBGC = ['#DB4437', '#0F9D58', '#F4B400', '#4285F4']; //red, green, yellow, blue
-const messageTC = ['#ffffff', '#3e3e3e']; //white ,grey
+const messageBGC = {
+    red: '#DB4437',
+    green: '#0F9D58',
+    yellow: '#F4B400',
+    blue: '#4285F4'
+};
+const messageTC = {
+    white: '#ffffff',
+    grey: '#3e3e3e'
+};
 
 const app = express();
 const server = http.createServer(app);
@@ -35,9 +43,9 @@ io.on('connection', (socket) => {
             }
             socket.join(user.room);
     
-            socket.emit('message', generateMessage('Admin', `Welcome to the '${user.room}' room!`, {boolTime: true, messageBGC: messageBGC[1], messageTC: messageTC [0]}));
-            socket.emit('message', generateMessage('Admin', `Invite others to join the chat to have a pleasant chat!`, {boolTime: false, messageBGC: messageBGC[1], messageTC: messageTC [0]}));
-            socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.username} has joined the chat!`, {boolTime: true, messageBGC: messageBGC[1], messageTC: messageTC [0]}));
+            socket.emit('message', generateMessage('Admin', `Welcome to the '${user.room}' room!`, {boolTime: true, messageBGC: messageBGC.green, messageTC: messageTC.white}));
+            socket.emit('message', generateMessage('Admin', `Invite others to join the chat to have a pleasant chat!`, {boolTime: false, messageBGC: messageBGC.green, messageTC: messageTC.white}));
+            socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.username} has joined the chat!`, {boolTime: true, messageBGC: messageBGC.green, messageTC: messageTC.white}));
             
             io.to(user.room).emit('roomData', {
                 room: user.room,
@@ -51,7 +59,7 @@ io.on('connection', (socket) => {
             const filter = new Filter();
     
             if(filter.isProfane(message)){
-                return callback({error: 'Profanity is not allowed! Please watch your language!', boolTime: false, messageBGC: messageBGC[0], messageTC: messageTC [0]});
+                return callback({error: 'Profanity is not allowed! Please watch your language!', boolTime: false, messageBGC: messageBGC.red, messageTC: messageTC.white});
             }
     
             io.to(user.room).emit('message', generateMessage(user.username, message, {boolTime: true}));
@@ -70,7 +78,7 @@ io.on('connection', (socket) => {
         socket.on('disconnect', () => {
             const user = removeUser(socket.id);
             if (user){
-                io.to(user.room).emit('message', generateMessage('Admin', `${user.username} has left the chat!`, {boolTime: true, messageBGC: messageBGC[2], messageTC: messageTC [1]}));
+                io.to(user.room).emit('message', generateMessage('Admin', `${user.username} has left the chat!`, {boolTime: true, messageBGC: messageBGC.yellow, messageTC: messageTC.grey}));
                 io.to(user.room).emit('roomData', {
                     room: user.room,
                     users:  getUsersInRoom(user.room)
