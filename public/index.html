@@ -7,7 +7,7 @@
     </head>
     <body>
         <div class="centered-form">
-            <div class="centered-form__box">
+            <div class="centered-form__box-left">
                 <h1 style="text-align: center;">Chat App</h1>
                 <form action="/chat.html">
                     <label for="username">Display name</label>
@@ -17,6 +17,20 @@
                     <button>Join</button>
                 </form>
             </div>
+            <div id="active-room-list"></div>
         </div>
+        <script id="room-list" type="text/html">
+            <div class="centered-form__box-right">
+                <h5 style="text-align: center;">Active Room </h5>
+                <ul class="room-name">
+                    {{#rooms}}
+                        <li>{{room}}</li>
+                    {{/rooms}}
+                </ul>
+            </div>
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/js/home.js"></script>
     </body>
 </html>

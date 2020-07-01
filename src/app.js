@@ -4,7 +4,7 @@ const express = require('express');
 const socketio = require('socket.io');
 const Filter = require('bad-words');
 const { generateMessage, generateLocationMessage } = require('./utils/messages')
-const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
+const { addUser, removeUser, getUser, getUsersInRoom, getRoomsList } = require('./utils/users')
 const messageBGC = {
     red: '#DB4437',
     green: '#0F9D58',
@@ -34,6 +34,11 @@ io.on('connection', (socket) => {
     // io.to.emit : send an event to everybody in a specific room
     // socket.broadcast.to.emit : send an event to everybody in except for specific client (current connected one) but limited to the specific room
 
+    const checkroom = () => {
+        io.emit('activeRoomList', getRoomsList())
+    };
+    checkroom();
+    
     try {
         socket.on('join', ({ username, room }, callback) => {
             const  { error, user } = addUser({id: socket.id, username, room});
@@ -46,11 +51,12 @@ io.on('connection', (socket) => {
             socket.emit('message', generateMessage('Admin', `Welcome to the '${user.room}' room!`, {boolTime: true, messageBGC: messageBGC.green, messageTC: messageTC.white}));
             socket.emit('message', generateMessage('Admin', `Invite others to join the chat to have a pleasant chat!`, {boolTime: false, messageBGC: messageBGC.green, messageTC: messageTC.white}));
             socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.username} has joined the chat!`, {boolTime: true, messageBGC: messageBGC.green, messageTC: messageTC.white}));
-            
+
             io.to(user.room).emit('roomData', {
                 room: user.room,
                 users:  getUsersInRoom(user.room)
             });
+            checkroom();
             callback();
         });
     
@@ -83,6 +89,7 @@ io.on('connection', (socket) => {
                     room: user.room,
                     users:  getUsersInRoom(user.room)
                 });
+                checkroom();
             }
         });
     } catch (error) {

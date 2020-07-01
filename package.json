@@ -8,7 +8,7 @@
     "dev": "env-cmd -f ./config/dev.env nodemon src/index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Wendy",
   "license": "ISC",
   "dependencies": {
     "bad-words": "^3.0.3",
