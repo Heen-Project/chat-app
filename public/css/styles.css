@@ -80,7 +80,7 @@ button:disabled {
     background: #F7F7FA;
     padding: 24px;
     height: 325px;
-    width: 200px;
+    width: 250px;
     word-break: break-all;
     overflow-y: auto;
 }
@@ -214,4 +214,31 @@ button:disabled {
     list-style-position: inside;
     word-spacing:.25em;
     word-break: break-all;
+}
+
+@media (max-width: 500px) {
+    .centered-form {
+        flex-direction: column;
+    }
+    .chat {
+        flex-direction: column;
+        height: 100vh;
+        justify-content: space-between;
+    }
+    .chat__sidebar{
+        max-height: 80px;
+        width: 100vw;
+    }
+    .users{
+        display: none;
+    }
+    .list-title{
+        display: none;
+    }
+    .room-title {
+        position: absolute;
+        width: 100%;
+        margin-bottom: 80px;
+        text-align: center;
+    }
 }
